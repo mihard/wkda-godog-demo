@@ -13,21 +13,10 @@ services:
             dockerfile: Dockerfile
         links:
             - wiremock
+        ports:
+            -   8080:8080
         environment:
             CAR_LEAD_HOST: 'http://wiremock:8080'
-
-    test:
-        container_name: demo_godog
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: build_env
-        links:
-            - wiremock
-            - service
-        environment:
-            SERVICE_HOST: 'http://service:8080'
-            WIREMOCK_HOST: 'http://wiremock:8080'
 
 networks:
     default:
