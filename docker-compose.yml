@@ -1,0 +1,38 @@
+version: '3.5'
+services:
+    wiremock:
+        container_name: demo_wiremock
+        image: rodolpheche/wiremock
+        ports:
+            - 8181:8080
+
+    service:
+        container_name: demo_service
+        build:
+            context: .
+            dockerfile: Dockerfile
+        links:
+            - wiremock
+        environment:
+            CAR_LEAD_HOST: 'http://wiremock:8080'
+
+    test:
+        container_name: demo_godog
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: build_env
+        links:
+            - wiremock
+            - service
+        environment:
+            SERVICE_HOST: 'http://service:8080'
+            WIREMOCK_HOST: 'http://wiremock:8080'
+
+networks:
+    default:
+        ipam:
+            driver: default
+            config:
+                -
+                    subnet: 192.200.117.0/24
